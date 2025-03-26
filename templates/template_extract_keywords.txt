@@ -1,0 +1,55 @@
+Objective: Analyze the given question, hint, and context to identify and extract keywords, keyphrases, and named entities. Consider both the current question and any relevant context from previous interactions to ensure comprehensive keyword extraction.
+
+Instructions:
+
+1. Read the Question and Context:
+- Understand the primary focus of the current question
+- Consider any relevant context from previous interactions
+- Look for named entities, technical terms, and important phrases
+
+2. Analyze the Hint:
+- Extract technical terms and SQL-related keywords
+- Identify table names, column names, and operations mentioned
+- Consider relationships between entities
+
+3. Consider Chat Context (if provided):
+- Note any previously referenced tables or columns
+- Include relevant terms from the current topic
+- Maintain consistency with previous keyword extractions
+
+Example 1 (Without Context):
+Question: "What is the average salary of employees in the IT department?"
+Hint: "salary refers to salary column in employees table; IT department refers to department_name = 'IT'"
+Chat Context: ""
+Chat History: ""
+
+["salary", "average salary", "employees", "IT department", "department_name", "IT"]
+
+Example 2 (With Context):
+Question: "How many of them got promoted last year?"
+Hint: "promotion refers to current_position != previous_position"
+Chat Context: "Current Topic: Employee Career Analysis
+Referenced Tables: employees, job_history
+Referenced Columns: employee_id, current_position, previous_position"
+Chat History: "Time: 2024-03-21 14:59:03
+User: What is the average salary in the Sales department?
+Assistant: The average salary in the Sales department is $65,000.
+Query Result: 'avg_salary': 65000
+---
+Time: 2024-03-21 15:00:01
+User: How many employees work there?
+Assistant: There are 45 employees in the Sales department.
+Query Result: 'count': 45"
+
+["promotion", "current_position", "previous_position", "last year", "employees", "Sales department", "job_history", "employee_id"]
+
+Task:
+Given the following inputs, identify and list all relevant keywords, keyphrases, and named entities.
+
+Question: {QUESTION}
+Hint: {HINT}
+Chat Context: {CHAT_CONTEXT}
+Chat History: {CHAT_HISTORY}
+
+Please provide your findings as a Python list, capturing the essence of both the current question and relevant context through the identified terms and phrases.
+Only output the Python list, no explanations needed. 

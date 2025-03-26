@@ -1,0 +1,63 @@
+setting_name: wtl
+
+# System settings
+num_workers: 5
+
+# Chat-specific settings
+enable_chat: true
+chat_settings:
+  memory:
+    window_size: 10
+    relevance_threshold: 0.7
+  context:
+    max_history_messages: 50
+    include_sql_history: true
+  response:
+    style: conversational
+    include_context: true
+
+team_agents:
+  chat_context_analyzer:
+    engine: 'gpt-4o-mini'
+    tools:
+      history_analyzer:
+        template_name: 'history_analyzer_wtl'
+        engine_config:
+          engine_name: 'gemini-2.0-flash-exp'  # Changed to cloud model
+          temperature: 0.0
+        parser_name: 'query_enhancement'
+      query_enhancement:
+        template_name: 'query_enhancement_wtl'
+        engine_config:
+          engine_name: 'gemini-2.0-flash-exp'  # Changed to cloud model
+          temperature: 0.0
+        parser_name: 'query_enhancement'
+        
+  candidate_generator:
+    engine: 'gpt-4o-mini'
+    tools:
+      generate_candidate:
+        generator_configs:
+          - template_name: 'vllm'
+            engine_config:
+              engine_name: 'vllm-deepseek-coder-6.7b'  # Using new Phi-4-mini model
+              temperature: 0.0
+            parser_name: 'generate_candidate_vllm_cot'  # Using vLLM-specific parser
+            sampling_count: 1
+          - template_name: 'vllm'
+            engine_config:
+              engine_name: 'vllm-deepseek-coder-6.7b'  # Changed to cloud model as backup
+              temperature: 0.0
+            parser_name: 'generate_candidate_vllm_cot'  # Using vLLM-specific parser
+            sampling_count: 1
+
+# Response generator config (used by interface but not team builder)
+response_settings:
+  engine: 'gpt-4o-mini'
+  tools:
+    generate_response:
+      template_name: 'response_generation'
+      engine_config:
+        engine_name: 'gemini-2.0-flash-exp'  # Changed to cloud model
+        temperature: 0.0
+      parser_name: 'response_generation'
