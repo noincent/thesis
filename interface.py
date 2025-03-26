@@ -33,7 +33,7 @@ class DateTimeEncoder(json.JSONEncoder):
 class CHESSInterface:
     """Interface for the CHESS system with integrated chat and response generation."""
     
-    def __init__(self, config_name: str = "CHESS_IR_CG_UT", db_mode: str = 'dev'):
+    def __init__(self, config_name: str = "wtl", db_mode: str = 'dev'):
         """Initialize the CHESS Interface with response generation capabilities."""
         self._setup_logging()
         self._load_environment()
@@ -67,6 +67,12 @@ class CHESSInterface:
         
         # Add num_workers to config for RunManager
         self.config['num_workers'] = self.num_workers
+        
+        # Ensure all agents in team_agents have the required 'tools' key
+        for agent_name, agent_config in self.config.get('team_agents', {}).items():
+            if 'tools' not in agent_config:
+                logging.warning(f"Agent {agent_name} missing 'tools' config, adding empty tools dict")
+                agent_config['tools'] = {}
         
         # Build the team
         try:
@@ -596,9 +602,15 @@ def main():
 
     # List available databases
     print("Available databases:")
-    databases = interface.list_available_databases()
-    for idx, db in enumerate(databases, 1):
-        print(f"{idx}. {db}")
+    try:
+        databases = interface.list_available_databases()
+        for idx, db in enumerate(databases, 1):
+            print(f"{idx}. {db}")
+    except Exception as e:
+        print(f"Error listing databases: {e}")
+        print("Using default database: wtl_employee_tracker")
+        databases = ["wtl_employee_tracker"]
+        print("1. wtl_employee_tracker")
 
     # Get database selection
     session_id = None  # Track the session ID outside the question loop

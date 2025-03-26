@@ -38,17 +38,17 @@ team_agents:
     tools:
       generate_candidate:
         generator_configs:
-          - template_name: 'vllm'
+          - template_name: 'mysql_wtl'
             engine_config:
-              engine_name: 'vllm-deepseek-coder-6.7b'  # Using new Phi-4-mini model
+              engine_name: 'gemini-2.0-flash-exp'  # Using new Phi-4-mini model
               temperature: 0.0
-            parser_name: 'generate_candidate_vllm_cot'  # Using vLLM-specific parser
+            parser_name: 'generate_candidate_gemini_cot'  # Using vLLM-specific parser
             sampling_count: 1
-          - template_name: 'vllm'
+          - template_name: 'mysql_wtl'
             engine_config:
-              engine_name: 'vllm-deepseek-coder-6.7b'  # Changed to cloud model as backup
+              engine_name: 'gemini-2.0-flash-exp'  # Changed to cloud model as backup
               temperature: 0.0
-            parser_name: 'generate_candidate_vllm_cot'  # Using vLLM-specific parser
+            parser_name: 'generate_candidate_gemini_cot'
             sampling_count: 1
 
 # Response generator config (used by interface but not team builder)
