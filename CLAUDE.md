@@ -16,6 +16,8 @@
 - Use consistent error handling with try-except blocks and proper logging
 - Prefer composition over inheritance where appropriate
 - Use descriptive variable names that indicate purpose and type
+- For configuration, prefer unified structure - avoid duplicate configurations
+- When refactoring, maintain backward compatibility with warning logs
 
 ## Project Structure
 - `/src` - Main source code

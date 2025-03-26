@@ -33,7 +33,7 @@ class DateTimeEncoder(json.JSONEncoder):
 class CHESSInterface:
     """Interface for the CHESS system with integrated chat and response generation."""
     
-    def __init__(self, config_name: str = "wtl", db_mode: str = 'dev'):
+    def __init__(self, config_name: str = "CHESS_ALL", db_mode: str = 'dev'):
         """Initialize the CHESS Interface with response generation capabilities."""
         self._setup_logging()
         self._load_environment()
@@ -57,7 +57,21 @@ class CHESSInterface:
         
         # Initialize components
         self.active_sessions: Dict[str, ChatSession] = {}
-        response_generator_config = self.config.get('response_settings', {})
+        
+        # Get response generator config with a consistent approach:
+        # 1. Try to get from team_agents.response_generator if available
+        # 2. Fall back to response_settings for backward compatibility
+        # 3. Use empty dict as a last resort
+        response_generator_config = {}
+        if 'team_agents' in self.config and 'response_generator' in self.config['team_agents']:
+            response_generator_config = self.config['team_agents']['response_generator']
+            logging.info("Using response generator config from team_agents.response_generator")
+        elif 'response_settings' in self.config:
+            response_generator_config = self.config.get('response_settings', {})
+            logging.info("Using response generator config from response_settings (legacy)")
+        else:
+            logging.warning("No response generator config found, using defaults")
+            
         self.response_generator = ResponseGenerator(response_generator_config)
         self.response_formatter = ResponseFormatter()
         
