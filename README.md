@@ -43,6 +43,16 @@ The enhanced version introduces interactive chat functionality through new speci
     INDEX_SERVER_HOST='localhost'
     INDEX_SERVER_PORT=12345
 
+    # Database type: sqlite (default) or mysql
+    DB_TYPE="sqlite"
+
+    # MySQL configuration (only needed when DB_TYPE=mysql)
+    # DB_IP="localhost"
+    # DB_USERNAME="root"
+    # DB_PASSWORD="your_password_here"
+    # MYSQL_PORT=3306
+    # DB_NAME="chess_plus"
+
     OPENAI_API_KEY=
     GCP_PROJECT=''
     GCP_REGION='us-central1'
@@ -55,6 +65,85 @@ The enhanced version introduces interactive chat functionality through new speci
     pip install -r requirements.txt
     ```
 
+### MySQL Database Support
+
+CHESS+ now supports MySQL as the primary database backend, offering improved performance and scalability for larger datasets. The MySQL integration includes optimized vector similarity search and LSH-based retrieval.
+
+#### Setting up MySQL
+
+1. **Install MySQL Server** if you don't have it already:
+   ```bash
+   sudo apt update
+   sudo apt install mysql-server
+   ```
+
+2. **Create a database and user** for CHESS+:
+   ```bash
+   sudo mysql
+   ```
+   
+   Then in the MySQL prompt:
+   ```sql
+   CREATE DATABASE chess_plus;
+   CREATE USER 'chess_user'@'localhost' IDENTIFIED BY 'your_password_here';
+   GRANT ALL PRIVILEGES ON chess_plus.* TO 'chess_user'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+   ```
+
+3. **Configure CHESS+ to use MySQL** by editing your `.env` file:
+   ```
+   DB_TYPE="mysql"
+   DB_IP="localhost"
+   DB_USERNAME="chess_user"
+   DB_PASSWORD="your_password_here"
+   MYSQL_PORT=3306
+   DB_NAME="chess_plus"
+   ```
+
+4. **Initialize the MySQL schema**:
+   ```bash
+   mysql -u chess_user -p chess_plus < src/database_utils/mysql_schema.sql
+   ```
+
+5. **Test the MySQL integration**:
+   ```bash
+   ./run_mysql_tests.sh
+   ```
+   This script will verify:
+   - Basic connection functionality
+   - LSH signature storage and retrieval
+   - Vector database integration
+   - Transaction support
+
+#### MySQL Integration Architecture
+
+The CHESS+ MySQL implementation uses a hybrid approach:
+
+1. **Core Data Storage**: MySQL tables for primary application data
+2. **LSH/MinHash**: MySQL-based LSH signature storage with optimized indexing
+3. **Vector Embeddings**: Hybrid implementation combining:
+   - Vector metadata and filtering in MySQL
+   - Actual vector embeddings in ChromaDB
+   - Normalized relevance scoring across different ChromaDB versions
+
+This architecture provides:
+- **Scalability**: Efficient querying for large datasets
+- **Performance**: Fast filtering using MySQL B-tree indices
+- **Flexibility**: Support for complex metadata filtering
+- **Reliability**: Transaction support with improved error handling
+- **Compatibility**: Works with different versions of ChromaDB
+
+#### Runtime Behavior
+
+When using MySQL, the system will:
+- Store LSH signatures and vector metadata in MySQL tables
+- Use ChromaDB for vector similarity search, integrated with MySQL metadata
+- Support transaction operations with improved connection management
+- Normalize all relevance scores for consistent ranking regardless of vector distance metric
+- Support all existing functionality with backward compatibility
+- Provide improved performance for larger datasets
+
 ## Preprocessing
 
 To retrieve database catalogs and find the most similar database values to a question, preprocess the databases:
@@ -65,6 +154,30 @@ To retrieve database catalogs and find the most similar database values to a que
     ```
 
     This will create the minhash, LSH, and vector databases for each of the databases in the specified directory.
+
+### Advanced Preprocessing Options
+
+CHESS+ now supports additional preprocessing options, especially useful when working with MySQL databases:
+
+```bash
+python src/preprocess.py \
+  --db_root_directory "./data/dev/dev_databases" \
+  --db_id "wtl_employee_tracker" \
+  --signature_size 20 \
+  --n_gram 3 \
+  --threshold 0.01 \
+  --clear_existing \
+  --verbose True
+```
+
+Additional flags available:
+- `--clear_existing`: Clear existing LSH and vector data before processing
+- `--skip_lsh`: Skip LSH generation (only process vectors)
+- `--skip_vectors`: Skip vector generation (only process LSH)
+
+When using MySQL, the preprocessing will:
+1. Generate LSH signatures and store them in the MySQL `lsh_signatures` table
+2. Generate vector embeddings and store metadata in MySQL with the actual vectors in ChromaDB
 
 ## Running the Code
 

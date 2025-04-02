@@ -1,0 +1,27 @@
+# CHESS+ Database Configuration
+
+database:
+  # Use 'mysql' or 'sqlite'
+  type: mysql
+
+  # MySQL configuration (used when type is 'mysql')
+  mysql_settings:
+    host: localhost
+    port: 3306
+    user: chess_user
+    # Use environment variable or default fallback
+    password: "${MYSQL_PASSWORD:default_password}"
+    database: chess_plus
+    db_id: wtl_employee_tracker
+    pool_size: 5
+
+  # SQLite configuration (used when type is 'sqlite')
+  sqlite_settings:
+    mode: dev
+    id: wtl_employee_tracker
+
+# ChromaDB configuration
+chromadb:
+  host: localhost
+  port: 8000
+  collection_name: chess_plus_vectors
