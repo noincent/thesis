@@ -5,7 +5,7 @@ import yaml
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from database_utils.database_factory import DatabaseFactory
+from src.database_utils.database_factory import DatabaseFactory
 from src.runner.sqlite_manager import SQLiteDatabaseManager
 from src.runner.mysql_manager import MySQLDatabaseManager
 
@@ -124,7 +124,7 @@ class TestDatabaseFactory(unittest.TestCase):
         self.assertEqual(kwargs["db_name"], "test_db")
         self.assertEqual(kwargs["db_id"], "test_db_id")
     
-    @patch('database_utils.database_factory.os.getenv')
+    @patch('src.database_utils.database_factory.os.getenv')
     @patch('src.runner.sqlite_manager.SQLiteDatabaseManager')
     def test_create_database_manager_sqlite(self, mock_sqlite_manager, mock_getenv):
         """Test creating SQLite manager with env vars"""
@@ -149,7 +149,7 @@ class TestDatabaseFactory(unittest.TestCase):
         # Verify correct manager was returned
         self.assertEqual(manager, mock_instance)
     
-    @patch('database_utils.database_factory.os.getenv')
+    @patch('src.database_utils.database_factory.os.getenv')
     @patch('src.runner.mysql_manager.MySQLDatabaseManager')
     def test_create_database_manager_mysql(self, mock_mysql_manager, mock_getenv):
         """Test creating MySQL manager with env vars"""
@@ -175,7 +175,7 @@ class TestDatabaseFactory(unittest.TestCase):
         # Verify correct manager was returned
         self.assertEqual(manager, mock_instance)
     
-    @patch('database_utils.database_factory.os.getenv')
+    @patch('src.database_utils.database_factory.os.getenv')
     @patch('src.runner.mysql_manager.MySQLDatabaseManager')
     def test_get_database_manager_for_name(self, mock_mysql_manager, mock_getenv):
         """Test getting manager for specific database name"""
@@ -200,7 +200,7 @@ class TestDatabaseFactory(unittest.TestCase):
         # Verify correct manager was returned
         self.assertEqual(manager, mock_instance)
     
-    @patch('database_utils.database_factory.os.getenv')
+    @patch('src.database_utils.database_factory.os.getenv')
     def test_get_database_manager_for_name_sqlite_error(self, mock_getenv):
         """Test error when trying to get manager for name with SQLite"""
         # Mock environment variables
